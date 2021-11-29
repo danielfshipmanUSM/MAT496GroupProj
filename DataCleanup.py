@@ -38,13 +38,23 @@ the number of predictors in our final dataset.
 
 """
 
-Raw_Fake = pd.read_csv("Data/Fake.csv")
-Raw_True = pd.read_csv("Data/True.csv")
+Raw_Fake_With_Dupes = pd.read_csv("Data/Fake.csv")
+Raw_True_With_Dupes = pd.read_csv("Data/True.csv")
+
+# REMOVE DUPLICATES FROM FAKE AND TRUE
+Raw_Fake = Raw_Fake_With_Dupes.drop_duplicates(subset=['text'])
+Raw_True = Raw_True_With_Dupes.drop_duplicates(subset=['text'])
+
+Raw_Fake = Raw_Fake.reset_index(drop=True)
+Raw_True = Raw_True.reset_index(drop=True)
 
 wordlist = []
 lower_wordlist = []
 
-n = 20 # Raw_Fake.shape[0]
+
+
+
+n = 10000 # Raw_Fake.shape[0]
 uniqueWords = []
 uniqueWordsFalse = []
 uniqueWordsTrue = []
@@ -67,7 +77,7 @@ def BinSearch(a , x):
 def StandardizeScale(df,verbose=False):
     stand_df = pd.DataFrame.copy(df)
     max_val = 0
-    k=0
+    k=1
     for i in stand_df:
         max_col = np.max(df[i])
         if max_col >= max_val:
@@ -75,14 +85,14 @@ def StandardizeScale(df,verbose=False):
                 print("Finding Max Value {0} / {1}".format(k,len(df.columns)*len(df)))
                 k += 1
             max_val = max_col
-    k = 0
+    k = 1
     for i in stand_df:
         stand_df[i] = stand_df[i].astype(np.float32)
         for j in range(len(df[i])):
             if verbose:
                 print("Scaling all values {0} / {1}".format(k,len(df.columns)*len(df)))
                 k += 1
-            stand_df[i][j] = float(stand_df[i][j]) / max_val
+            stand_df.loc[:,(i,j)] = float(stand_df.loc[:,(i,j)] ) / max_val
     return stand_df
 
 
@@ -186,12 +196,12 @@ combinedData = pd.DataFrame(0, index=np.arange(2*n), columns=combinedWords)
 k = 1
 for i in combinedData:
     combinedData[i] = DataSet[i]
-    print("Filling combined Data {0} / {1}".format(k,len(combinedData)*len(combinedData[i])))
+    print("Filling combined Data {0} / {1}".format(k,len(combinedData.columns)))
     k += 1 
 combinedData['RealNews'] = DataSet['RealNews']
-StandardizeScale(combinedData)
-DataSet.to_csv("Formatted_Data.csv")
-combinedData.to_csv("Formatted_Data_Union.csv")
+#StandardizeScale(combinedData)
+DataSet.to_csv("Formatted_Data_{0}.csv".format(n))
+combinedData.to_csv("Formatted_Data_Union_{0}.csv".format(n))
 
 TotalCount = []
 
@@ -204,9 +214,9 @@ sortedTotalCount.sort(reverse=True)
 plt.hist(sortedTotalCount[1][:10],log=True)
 
 X = combinedData.loc[:,combinedData.columns != 'RealNews']
-X = StandardizeScale(X)
-outliers = FindOutliers(X, 0.1,verbose=True, standardize=False)
+X = StandardizeScale(X, verbose=True)
+# outliers = FindOutliers(X, 0.1, standardize=False)
 
-X_Cut = X.drop(columns=outliers)
-plt.hist(X_Cut)
+# X_Cut = X.drop(columns=outliers)
+# plt.hist(X_Cut)
 print(DataSet)
