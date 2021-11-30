@@ -16,6 +16,7 @@ import pandas as pd
 from bisect import bisect_left as bl
 from matplotlib import pyplot as plt
 import re
+import json
 
 # StringWords = ["There are few daisies", "The sky is blue tonight", "I can't tell where I am"]
 # StringWords = ["AAADWDWDW WDAWDA WEDAD A A", "DWAD WD A OE PC E A A A", "OKD E O KL KS P KE "]
@@ -36,10 +37,17 @@ If we narrow the focus of the question to "can frequency of words classify" rath
 we could only use unique words that are both in Fake and True. This would allow us greatly reduce 
 the number of predictors in our final dataset. 
 
+At 20000 samples or n=10000, the amount of predictors is only around 22000, this is a massive improvement.
+how
+
+Try cross-referencing the data with an English Dictionary. 
+
 """
 
 Raw_Fake_With_Dupes = pd.read_csv("Data/Fake.csv")
 Raw_True_With_Dupes = pd.read_csv("Data/True.csv")
+input_file = open ("Data/words_dictionary.json")
+word_dict = json.load(input_file)
 
 # REMOVE DUPLICATES FROM FAKE AND TRUE
 Raw_Fake = Raw_Fake_With_Dupes.drop_duplicates(subset=['text'])
@@ -54,7 +62,7 @@ lower_wordlist = []
 
 
 
-n = 10000 # Raw_Fake.shape[0]
+n = 3000 # Raw_Fake.shape[0]
 uniqueWords = []
 uniqueWordsFalse = []
 uniqueWordsTrue = []
@@ -190,6 +198,10 @@ for i in uniqueWordsFalse:
     if x != False:
         combinedWords.append(i)
 
+for i in combinedWords:
+    if not i in word_dict:
+        combinedWords.remove(i)
+
 combinedWords = np.append(combinedWords, "RealNews")
 combinedData = pd.DataFrame(0, index=np.arange(2*n), columns=combinedWords)
 
@@ -200,23 +212,23 @@ for i in combinedData:
     k += 1 
 combinedData['RealNews'] = DataSet['RealNews']
 #StandardizeScale(combinedData)
-DataSet.to_csv("Formatted_Data_{0}.csv".format(n))
-combinedData.to_csv("Formatted_Data_Union_{0}.csv".format(n))
-
+# DataSet.to_csv("Formatted_Data_{0}.csv".format(n))
+combinedData.to_csv("Formatted_Data_Union_Wordlist{0}.csv".format(n))
+print("done")
 TotalCount = []
 
-for i in DataSet:
-    count_tuple = [np.sum(DataSet[i]), i]
-    TotalCount.append(count_tuple)
+#for i in DataSet:
+ #   count_tuple = [np.sum(DataSet[i]), i]
+  #  TotalCount.append(count_tuple)
  
-sortedTotalCount = TotalCount
-sortedTotalCount.sort(reverse=True)
-plt.hist(sortedTotalCount[1][:10],log=True)
+#sortedTotalCount = TotalCount
+#sortedTotalCount.sort(reverse=True)
+#plt.hist(sortedTotalCount[1][:10],log=True)
 
-X = combinedData.loc[:,combinedData.columns != 'RealNews']
-X = StandardizeScale(X, verbose=True)
+#X = combinedData.loc[:,combinedData.columns != 'RealNews']
+#X = StandardizeScale(X, verbose=True)
 # outliers = FindOutliers(X, 0.1, standardize=False)
 
 # X_Cut = X.drop(columns=outliers)
 # plt.hist(X_Cut)
-print(DataSet)
+#print(DataSet)
