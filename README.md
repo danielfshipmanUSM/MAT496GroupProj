@@ -1,4 +1,9 @@
 # MAT496GroupProj
+
+designed for this data folder 
+https://drive.google.com/file/d/1yDAWMTF1tHLBOdnYfJ3Q-xn7khoqPMW3/view?usp=sharing
+
+
 Various python scripts to assist data manipulation for the MAT 496 Datascience group project
 
 The idea is to keep track of changes to our scripts. 
