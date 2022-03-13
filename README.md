@@ -6,7 +6,7 @@ https://drive.google.com/file/d/1yDAWMTF1tHLBOdnYfJ3Q-xn7khoqPMW3/view?usp=shari
 
 Various python scripts to assist data manipulation for the MAT 496 Datascience group project
 
-The idea is to keep track of changes to our scripts. 
+Background code used for Fake/True News classifier. These programs take the data organized by DataCleanup.py and compares the results of various classifiers. Some of the algorithms used are Naive Bayes, Random Forest and Logistic Regression.
 
 Currently the DataCleanup.py takes the true and false datasets found in Data folder. Make sure to unzip 
 it iterates through all words, then parses out just letters and capitals. This is to avoid differences between
@@ -21,5 +21,4 @@ To mitigate this problem, we attempt various kinds of feature selection.
 
 Due to the high dimensionality of the predictors, however, some algorithms are entirely infeasible. For instance "Best subset selection" simply wont happen. 
 
-TODO implement feature selection 
-  - Try "Forward Step Selection"
+
